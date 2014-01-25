@@ -1,0 +1,19 @@
+{
+  "name": "redis-node-app",
+  "version": "0.0.1",
+  "description": "test",
+  "main": "app.js",
+  "scripts": {
+    "test": "node test"
+  },
+  "keywords": [
+    "redis",
+    "test"
+  ],
+  "author": "icai",
+  "license": "MIT",
+  "dependencies": {
+    "socket.io": "~0.9.16",
+    "express": "~3.4.8"
+  }
+}

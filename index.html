@@ -1,0 +1,83 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Socket IO Test</title>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>		
+    </head>
+    <body>
+        <h1>Socket IO Test</h1>
+        <div id="setNickSpace">
+        	Nickname: <input type="text"  id="nickname"/> <br/>
+        	Room: <input type="text"  id="room"/> <button id="setNickName">Set</button>
+        </div>
+        <div id="chat" style="display: none;">
+	        <div id="board"> </div>
+	        <textarea id="textSend"></textarea>
+	        <button id="send">Send</button>
+        </div>
+    </body>
+<script type="text/javascript">
+  var chati = null;
+  $(document).ready(function(){
+  	$("#setNickName").click(function(){  
+  		$("#setNickSpace").hide(); 
+  		$("#chat").show();
+  		chati = new Chat;
+  		chati.Connect($("#nickname").val(), $("#room").val());
+  	} );
+  	$('textarea#textSend').bind('keypress', function(e) {
+        if(e.keyCode==13){
+        	sendMsg();
+        }
+	});
+  	
+  	$("#send").click(function()
+  	{
+  		sendMsg();
+  	});
+  	function sendMsg(){
+  		var m = $("#textSend").val();
+  		$("#textSend").val("");
+  		chati.Send(m);
+  	}
+  	
+  	var today = new Date();  
+	var offset = -(today.getTimezoneOffset()/60); 
+  	
+  });
+  
+  
+  function Chat(){
+  	this.socket = null;
+  	this.Nickname = "";
+  	this.Room = "";
+  	
+  	this.Connect = function(nick, room){ 
+  		socket =  io.connect('http://localhost:3000');
+  		Nickname = nick;
+  		Room = room;
+  		//conectarse
+  		socket.on('connect',function (data) {
+	    	socket.emit('setNickAndRoom', {nick: nick, room: room}, function(response){
+	    		$("#board").append("<p>" + response.msg + "</p>");
+	    	});
+  		});
+  		//mensajes
+  		socket.on("message", function(msg, p, c){
+  			$("#board").append("<p>" + msg.nick + ": " + msg.msg + "</p>");
+  		});
+  	};
+  	
+  	this.Send = function Send (msg) {
+		socket.emit("message", {msg: msg, nick:  Nickname} , function(response) {
+			
+			$("#board").append("<p>" + Nickname + ": " + msg + "</p>");
+		});	
+	};
+  	
+  	
+  }
+  
+</script>
+</html>
